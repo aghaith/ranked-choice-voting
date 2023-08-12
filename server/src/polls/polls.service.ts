@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt/dist';
 import { createPollID, createUserID } from 'src/ids';
 import { CreatePollFields, JoinPollFields, RejoinPollFields } from './types';
 import { PollsRepository } from './polls.repository';
@@ -6,7 +7,10 @@ import { PollsRepository } from './polls.repository';
 @Injectable()
 export class PollsService {
   private readonly logger = new Logger(PollsService.name);
-  constructor(private readonly pollsRepository: PollsRepository) {}
+  constructor(
+    private readonly pollsRepository: PollsRepository,
+    private readonly jwtService: JwtService,
+  ) {}
   async createPoll(fields: CreatePollFields) {
     const pollID = createPollID();
     const userID = createUserID();
@@ -19,15 +23,24 @@ export class PollsService {
 
     // TODO - create an accessToken based off of pollID and userID
 
+    this.logger.debug(
+      `Creating token string for pillID: ${createdPoll.id} and userID: ${userID}`,
+    );
+
+    const signedString = this.jwtService.sign(
+      {
+        pollID: createdPoll.id,
+        name: fields.name,
+      },
+      {
+        subject: userID,
+      },
+    );
+
     return {
       poll: createdPoll,
-      // accessToken
+      accessToken: signedString,
     };
-    // return {
-    //   ...fields,
-    //   userID,
-    //   pollID,
-    // };
   }
 
   async joinPoll(fields: JoinPollFields) {
@@ -41,14 +54,24 @@ export class PollsService {
 
     // TODO - create access Token
 
+    this.logger.debug(
+      `Creating token string for pillID: ${joinedPoll.id} and userID: ${userID}`,
+    );
+
+    const signedString = this.jwtService.sign(
+      {
+        pollID: joinedPoll.id,
+        name: fields.name,
+      },
+      {
+        subject: userID,
+      },
+    );
+
     return {
       poll: joinedPoll,
-      // accessToken: signedString
+      accessToken: signedString,
     };
-    // return {
-    //   ...fields,
-    //   userID,
-    // };
   }
 
   async rejoinPoll(fields: RejoinPollFields) {
