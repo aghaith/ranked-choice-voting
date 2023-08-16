@@ -15,7 +15,7 @@ export class ControllerAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    this.logger.debug(`Checking for auth token on request.body`, request.body);
+    this.logger.debug(`Checking for auth token on request body`, request.body);
 
     const { accessToken } = request.body;
 

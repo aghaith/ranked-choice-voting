@@ -25,9 +25,9 @@ export class PollsController {
   async rejoin(@Req() request: RequestWithAuth) {
     const { userID, pollID, name } = request;
     const result = await this.pollsService.rejoinPoll({
-      name: 'From token',
-      pollID: 'Also from token',
-      userID: 'Guess where this comes from?',
+      name,
+      pollID,
+      userID,
     });
     return result;
   }
